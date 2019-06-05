@@ -1,0 +1,23 @@
+body{
+    background-color: black;
+    margin: 0;
+   
+}
+l1{
+    margin-left: 30rem;
+    font-family: 'Courier New', Courier, monospace;
+    text-align-last: center;
+    text-align: center;
+    color: goldenrod;
+    font-size: 80px;
+}
+    
+a{
+    font-family:'Franklin Gothic Medium';
+    text-decoration: none;
+    color: white;
+    font-style: unset;
+    margin-left: 40rem;
+  
+    font-size: 50px;
+}
