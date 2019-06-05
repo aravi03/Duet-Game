@@ -44,13 +44,13 @@ class player{
         this.y=this.height+70*Math.cos(this.angle);
         this.x1=wmax/2-70*Math.sin(this.angle);
         this.y1=this.height-70*Math.cos(this.angle);
-        this.speed=0.1;
+        this.speed=0.15;
         this.action=0;
         this.score=0;
         this.ball_size=20;
         this.radius=70;
         this.game=0;
-        this.obstacle_speed=3;
+        this.obstacle_speed=10;
 
 
     }
@@ -427,8 +427,8 @@ function fly(timestamp) {
     if(second-first>=2000)
     {   p.score+=1;
         first=new Date().getTime();
-        p.increment_obs_speed(0.01);
-        p.upward_motion(0.05);
+        p.increment_obs_speed(0.5);
+        p.upward_motion(0.5);
     }
     
     c.clearRect(0,0,canvas.width,canvas.height);
