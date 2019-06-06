@@ -8,6 +8,8 @@ var paused=false;
 var high_score=[];
 var attempts=0;
 var final_exit=false;
+var packet_life=false;
+var powerup_counter=0;
 
 function togglePause()
 {
@@ -30,11 +32,12 @@ function togglePause()
 
 
 
+
 clamp = function(value,min, max) {
     return Math.min(Math.max(value, min), max);
   }
 
-
+  
 
 class player{
     constructor()
@@ -44,13 +47,13 @@ class player{
         this.y=this.height+70*Math.cos(this.angle);
         this.x1=wmax/2-70*Math.sin(this.angle);
         this.y1=this.height-70*Math.cos(this.angle);
-        this.speed=0.15;
+        this.speed=0.13;
         this.action=0;
         this.score=0;
         this.ball_size=20;
-        this.radius=70;
+        this.radius=80;
         this.game=0;
-        this.obstacle_speed=10;
+        this.obstacle_speed=5;
 
 
     }
@@ -106,7 +109,79 @@ class player{
 }
 
 var p=new player();
+class powerups{
+    constructor()
+    { this.x=wmax/2-90+Math.random()*140;
+      this.y=0;
+      this.type=1;
+      this.initial_radius;
+      this.initial_speed;
+      
+  }
+  draw_powerup()
+  {
+      var img = new Image();
+      img.width='20px';
+      img.height='20px';
+   if(this.type==1)
+    {img.src = 'energy_drink.png';
+    c.drawImage(img,this.x,this.y,50,50);
+  }
+    else if(this.type==2)
+   { img.src='jetpack.png';
+   c.drawImage(img,this.x,this.y,50,50);
+  }
+  //   document.body.appendChild(img);
+     this.y+=5;
 
+
+  }
+  collision()
+  {
+      var closestX = clamp(p.x, this.x, this.x+this.width);
+var closestY = clamp(p.x,this.y, this.y+this.height);
+
+// Calculate the distance between the circle's center and this closest point
+var distanceX = p.x - closestX;
+var distanceY = p.y - closestY;
+
+// If the distance is less than the circle's radius, an intersection occurs
+var distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+if (distanceSquared < (20 * 20)&&packet_life==true)
+{   if(this.type==1)    
+  {   this.initial_radius=p.radius;
+      p.radius*=1.5;
+      p.invincible=true;
+      packet_life=false;
+  }
+  if(this.type==2)    
+  {   this.initial_speed=p.speed;
+      p.speed*=1.5;
+      packet_life=false;
+      
+  }
+  
+  
+}
+
+  }
+  destroy()
+  {
+      if(this.type==1)    
+  {   p.radius=this.initial_radius;
+      p.invincible=false;
+      
+  }
+  if(this.type==1)    
+  {  p.speed=this.initial_speed;
+      
+      
+  }
+  }
+}
+  
+
+var packet=new powerups();
 class obstacle{
     constructor()
     {   this.x=wmax/2-90+Math.random()*140;
@@ -429,8 +504,28 @@ function fly(timestamp) {
         first=new Date().getTime();
         p.increment_obs_speed(0.5);
         p.upward_motion(0.5);
+        var random_no=Math.random()*100;
+        if(random_no>50&&random_no<55&&packet_life==false)
+        {
+            packet_life=true;
+            packet.type=1;
+        }
+        else if(random_no>5&&random_no<10&&packet_life==false)
+        {
+            packet_life=true;
+            packet.type=2;
+        }
+        if(packet_life)
+        {   
+            powerup_counter++;
+        }
+
     }
-    
+    if(powerup_counter>=6)
+    {
+        packet.destroy();
+        powerup_counter=0;
+    }
     c.clearRect(0,0,canvas.width,canvas.height);
 
     // c.beginPath();
@@ -442,7 +537,10 @@ function fly(timestamp) {
     // c.arc(x1,y1,20,0,Math.PI*2,true);
     // c.strokeStyle='red';
     // c.stroke();
-
+    if(packet_life)
+    {packet.draw_powerup();
+        packet.collision();
+    }
     p.drawplayer();
     p.movement();
 
@@ -458,6 +556,8 @@ function fly(timestamp) {
     o[0].collision();
        if(o[0].y>=hmax)
     o[0]=new obstacle();
+    if(packet.y>=hmax)
+    packet_life=false;
    
     
     
